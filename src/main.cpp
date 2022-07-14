@@ -1,6 +1,3 @@
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif  // __EMSCRIPTEN__
 #include <SDL.h>
 
 #include <cstdlib>
@@ -60,7 +57,7 @@ int main(int argc, char** argv) {
     params.renderer_type = TCOD_RENDERER_SDL2;
     params.vsync = 1;
     params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
-    params.window_title = "Libtcod Template Project";
+    params.window_title = "Roguelike";
 
     auto tileset = tcod::load_tilesheet(get_data_dir() / "dejavu16x16_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
     params.tileset = tileset.get();
@@ -70,11 +67,7 @@ int main(int argc, char** argv) {
 
     g_context = tcod::Context(params);
 
-#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(main_loop, 0, 0);
-#else
     while (true) main_loop();
-#endif
   } catch (const std::exception& exc) {
     std::cerr << exc.what() << "\n";
     throw;
