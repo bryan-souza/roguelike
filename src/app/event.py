@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 import tcod
 
-from src.app.context import AbstractGameContext
 from src.app.direction import Direction
 from src.app.tile import Tile
 
@@ -23,7 +22,7 @@ class ExitEventHandler(AbstractEventHandler):
 
 class PlayerMovementEventHandler(AbstractEventHandler):
 
-    def handle_event(self, event: tcod.event.Event, game_context: AbstractGameContext):
+    def handle_event(self, event: tcod.event.Event, game_context):
         if isinstance(event, tcod.event.KeyDown):
             if event.sym == tcod.event.KeySym.LEFT:
                 direction = Direction.LEFT
