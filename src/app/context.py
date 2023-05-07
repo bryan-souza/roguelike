@@ -10,6 +10,10 @@ from src.app.tile import Tile
 
 
 class AbstractGameContext(ABC):
+    game_map: AbstractMap
+    root_console: tcod.Console
+    tcod_context: tcod.context.Context
+    player: Character
 
     @abstractmethod
     def start_game(self):
@@ -17,10 +21,6 @@ class AbstractGameContext(ABC):
 
 
 class GameContext(AbstractGameContext):
-    game_map: AbstractMap
-    root_console: tcod.Console
-    tcod_context: tcod.context.Context
-    player: Character
 
     def __init__(self, game_map: AbstractMap, root_console: tcod.Console, tcod_context: tcod.context.Context,
                  player: Character):
