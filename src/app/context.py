@@ -4,6 +4,7 @@ import tcod
 
 from src.app.character import Character
 from src.app.direction import Direction
+from src.app.event import ExitEventHandler
 from src.app.map import AbstractMap
 from src.app.tile import Tile
 
@@ -29,6 +30,9 @@ class GameContext(AbstractGameContext):
         self.player = player
 
     def start_game(self):
+        # TODO: Create event router class
+        exit_event_handler = ExitEventHandler()
+
         while True:
             self.root_console.clear()
 
@@ -67,5 +71,4 @@ class GameContext(AbstractGameContext):
 
                         print(self.player.x, self.player.y)
 
-                if isinstance(event, tcod.event.Quit):
-                    raise SystemExit()
+                exit_event_handler.handle_event(event)
