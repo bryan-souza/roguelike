@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 import tcod
 
+from src.app.character import Character
 from src.app.direction import Direction
 from src.app.map import AbstractMap
-from src.app.object import GameObject, MovableObject
 from src.app.tile import Tile
 
 
@@ -19,10 +19,10 @@ class GameContext(AbstractGameContext):
     game_map: AbstractMap
     root_console: tcod.Console
     tcod_context: tcod.context.Context
-    player: MovableObject
+    player: Character
 
     def __init__(self, game_map: AbstractMap, root_console: tcod.Console, tcod_context: tcod.context.Context,
-                 player: MovableObject):
+                 player: Character):
         self.game_map = game_map
         self.root_console = root_console
         self.tcod_context = tcod_context
