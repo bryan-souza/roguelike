@@ -3,10 +3,8 @@ from abc import ABC, abstractmethod
 import tcod
 
 from src.app.character import Character
-from src.app.direction import Direction
 from src.app.event import ExitEventHandler, PlayerMovementEventHandler
 from src.app.map import AbstractMap
-from src.app.tile import Tile
 
 
 class AbstractGameContext(ABC):
@@ -30,7 +28,6 @@ class GameContext(AbstractGameContext):
         self.player = player
 
     def start_game(self):
-        # TODO: Create event router class
         exit_event_handler = ExitEventHandler()
         player_movement_event_handler = PlayerMovementEventHandler()
 
