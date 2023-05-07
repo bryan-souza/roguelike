@@ -4,7 +4,7 @@ import tcod
 
 from src.app.character import Character
 from src.app.direction import Direction
-from src.app.event import ExitEventHandler
+from src.app.event import ExitEventHandler, PlayerMovementEventHandler
 from src.app.map import AbstractMap
 from src.app.tile import Tile
 
@@ -32,6 +32,7 @@ class GameContext(AbstractGameContext):
     def start_game(self):
         # TODO: Create event router class
         exit_event_handler = ExitEventHandler()
+        player_movement_event_handler = PlayerMovementEventHandler()
 
         while True:
             self.root_console.clear()
@@ -44,31 +45,5 @@ class GameContext(AbstractGameContext):
             for event in tcod.event.wait():
                 self.tcod_context.convert_event(event)
 
-                # Player movement
-                # TODO: Move this to a separate class
-                if isinstance(event, tcod.event.KeyDown):
-                    print(event)
-
-                    if event.sym == tcod.event.KeySym.LEFT:
-                        direction = Direction.LEFT
-                    elif event.sym == tcod.event.KeySym.RIGHT:
-                        direction = Direction.RIGHT
-                    elif event.sym == tcod.event.KeySym.UP:
-                        direction = Direction.UP
-                    elif event.sym == tcod.event.KeySym.DOWN:
-                        direction = Direction.DOWN
-
-                    if direction:
-                        target_x = self.player.x + direction[0]
-                        target_y = self.player.y + direction[1]
-
-                        object_at_target_position = self.game_map.get_object_in_position(target_x, target_y)
-                        if object_at_target_position is None:
-                            self.player.move(*direction)
-                        else:
-                            if isinstance(object_at_target_position, Tile) and object_at_target_position.walkable:
-                                self.player.move(*direction)
-
-                        print(self.player.x, self.player.y)
-
                 exit_event_handler.handle_event(event)
+                player_movement_event_handler.handle_event(event, self)
