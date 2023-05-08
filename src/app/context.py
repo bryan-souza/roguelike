@@ -5,6 +5,7 @@ import tcod
 from src.app.character import Character
 from src.app.event import ExitEventHandler, PlayerMovementEventHandler
 from src.app.map import AbstractMap
+from src.app.palette import Palette
 
 
 class AbstractGameContext(ABC):
@@ -35,7 +36,7 @@ class GameContext(AbstractGameContext):
             self.root_console.clear()
 
             for obj in self.game_map.objects:
-                self.root_console.print(obj.x, obj.y, obj.char, obj.color)
+                self.root_console.print(obj.x, obj.y, obj.char, obj.color, Palette.BACKGROUND)
 
             self.tcod_context.present(self.root_console)
 
