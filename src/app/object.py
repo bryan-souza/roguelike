@@ -1,6 +1,7 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 from src.app.palette import Color
+from src.app.render import RenderOrder
 
 
 class GameObject:
@@ -8,21 +9,29 @@ class GameObject:
     y: int
     char: str
     color: Tuple[int, int, int]
+    render_order: RenderOrder
 
-    def __init__(self, x: int, y: int, char: str, color=None):
+    def __init__(self, x: int, y: int, char: str, color: Optional[Tuple[int, int, int]] = None, render_order: Optional[RenderOrder] = None):
         if color is None:
             color = Color.WHITE
+
+        if render_order is None:
+            render_order = RenderOrder.TILE
 
         self.x = x
         self.y = y
         self.char = char
         self.color = color
+        self.render_order = render_order
 
 
 class MovableObject(GameObject):
 
-    def __init__(self, x: int, y: int, char: str, color=None):
-        super().__init__(x, y, char, color)
+    def __init__(self, x: int, y: int, char: str, color: Optional[Tuple[int, int, int]] = None, render_order: Optional[RenderOrder] = None):
+        if render_order is None:
+            render_order = RenderOrder.ACTOR
+
+        super().__init__(x, y, char, color, render_order)
 
     def move(self, target_x: int, target_y: int):
         self.x += target_x
