@@ -18,6 +18,7 @@ def main():
     ]
 
     game_map = Map(objects)
+    game_map.generate_map(console.width, console.height)
 
     with tcod.context.new(columns=console.width, rows=console.height, tileset=tileset) as context:
         game_context = GameContext(game_map, console, context, player)
