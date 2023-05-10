@@ -24,6 +24,9 @@ class GameObject:
         self.color = color
         self.render_order = render_order
 
+    def __str__(self):
+        return f'<GameObject x={self.x} y={self.y} char={self.char} color={self.color} render_order={self.render_order}>'
+
 
 class MovableObject(GameObject):
 

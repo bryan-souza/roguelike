@@ -13,12 +13,12 @@ class Tile(GameObject):
 class Wall(Tile):
 
     def __init__(
-        self,
-        x: int,
-        y: int,
-        char: Optional[str] = None,
-        color: Optional[Tuple[int, int, int]] = None,
-        render_order: Optional[RenderOrder] = None
+            self,
+            x: int,
+            y: int,
+            char: Optional[str] = None,
+            color: Optional[Tuple[int, int, int]] = None,
+            render_order: Optional[RenderOrder] = None
     ):
         if char is None:
             char = '#'
@@ -31,16 +31,19 @@ class Wall(Tile):
         self.visible = True
         self.walkable = False
 
+    def __str__(self):
+        return f'<Wall(x={self.x}, y={self.y},  char={self.char}, color={self.color}, render_order={self.render_order})>'
+
 
 class Floor(Tile):
 
     def __init__(
-        self,
-        x: int,
-        y: int,
-        char: Optional[str] = None,
-        color: Optional[Tuple[int, int, int]] = None,
-        render_order: Optional[RenderOrder] = None
+            self,
+            x: int,
+            y: int,
+            char: Optional[str] = None,
+            color: Optional[Tuple[int, int, int]] = None,
+            render_order: Optional[RenderOrder] = None
     ):
         if char is None:
             char = '.'
@@ -52,3 +55,6 @@ class Floor(Tile):
         super().__init__(x, y, char, color, render_order)
         self.visible = True
         self.walkable = True
+
+    def __str__(self):
+        return f'<Floor(x={self.x}, y={self.y},  char={self.char}, color={self.color}, render_order={self.render_order})>'
