@@ -20,6 +20,14 @@ class AbstractMap(ABC):
         ...
 
     @abstractmethod
+    def place_objects(self, objects: List[GameObject]) -> None:
+        ...
+
+    @abstractmethod
+    def remove_object_at_position(self, target_x: int, target_y: int) -> None:
+        ...
+
+    @abstractmethod
     def generate_map(self, map_width: int, map_height: int) -> None:
         ...
 
@@ -38,20 +46,28 @@ class AbstractMap(ABC):
 
 class Map(AbstractMap):
 
-    def __init__(self, objects: List[GameObject]):
-        self._objects = objects
+    def __init__(self):
+        self._objects = []
 
     @property
     def objects(self):
         return self._objects
 
-    def get_object_in_position(self, target_x: int, target_y: int) -> Tile | None:
+    def place_objects(self, objects: List[GameObject]) -> None:
+        self._objects.extend(objects)
+
+    def remove_object_at_position(self, target_x: int, target_y: int) -> None:
+        obj = self.get_object_in_position(target_x, target_y)
+        if obj:
+            self._objects.remove(obj)
+
+    def get_object_in_position(self, target_x: int, target_y: int) -> GameObject | None:
         # TODO: Optimize object search
-        for obj in self.objects:
+        for obj in self._objects:
             if (obj.x == target_x) and (obj.y == target_y):
                 return obj
 
-            return None
+        return None
 
     def generate_map(self, map_width: int, map_height: int) -> None:
         bsp = tcod.bsp.BSP(0, 0, map_width - 1, map_height - 1)

@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 
 import tcod
@@ -39,8 +40,6 @@ class PlayerMovementEventHandler(AbstractEventHandler):
             target_y = game_context.player.y + direction[1]
 
             object_at_target_position = game_context.game_map.get_object_in_position(target_x, target_y)
-            if object_at_target_position is None:
-                game_context.player.move(*direction)
-            else:
+            if object_at_target_position is not None:
                 if isinstance(object_at_target_position, Tile) and object_at_target_position.walkable:
                     game_context.player.move(*direction)
