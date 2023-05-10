@@ -24,7 +24,11 @@ class AbstractMap(ABC):
         ...
 
     @abstractmethod
-    def remove_object_at_position(self, target_x: int, target_y: int) -> None:
+    def get_objects_at_coordinates(self, target_x: int, target_y: int) -> List[GameObject] | None:
+        ...
+
+    @abstractmethod
+    def remove_object(self, obj: GameObject) -> None:
         ...
 
     @abstractmethod
@@ -37,10 +41,6 @@ class AbstractMap(ABC):
 
     @abstractmethod
     def _connect_rooms(self, parent_node: tcod.bsp.BSP) -> None:
-        ...
-
-    @abstractmethod
-    def get_object_in_position(self, target_x: int, target_y: int) -> GameObject | None:
         ...
 
 
@@ -56,18 +56,19 @@ class Map(AbstractMap):
     def place_objects(self, objects: List[GameObject]) -> None:
         self._objects.extend(objects)
 
-    def remove_object_at_position(self, target_x: int, target_y: int) -> None:
-        obj = self.get_object_in_position(target_x, target_y)
-        if obj:
+    def remove_object(self, obj: GameObject) -> None:
+        if isinstance(obj, GameObject):
             self._objects.remove(obj)
 
-    def get_object_in_position(self, target_x: int, target_y: int) -> GameObject | None:
-        # TODO: Optimize object search
+    def get_objects_at_coordinates(self, target_x: int, target_y: int) -> List[GameObject] | None:
+        output = []
         for obj in self._objects:
-            if (obj.x == target_x) and (obj.y == target_y):
-                return obj
+            if obj.x == target_x and obj.y == target_y:
+                output.append(obj)
 
-        return None
+        if not output:
+            return None
+        return output
 
     def generate_map(self, map_width: int, map_height: int) -> None:
         bsp = tcod.bsp.BSP(0, 0, map_width - 1, map_height - 1)
@@ -84,6 +85,9 @@ class Map(AbstractMap):
         while True:
             door_x, door_y = self._get_door_coordinates(parent_node)
             if not self._is_door_obstructed(door_x, door_y):
+                for obj in self.get_objects_at_coordinates(door_x, door_y):
+                    self.remove_object(obj)
+
                 self._objects.append(Floor(door_x, door_y))
                 break
 
