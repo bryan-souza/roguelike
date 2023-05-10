@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import tcod
+from loguru import logger
 
 from src.app.character import Character
 from src.app.event import ExitEventHandler, PlayerMovementEventHandler
@@ -31,6 +32,7 @@ class GameContext(AbstractGameContext):
     def start_game(self):
         exit_event_handler = ExitEventHandler()
         player_movement_event_handler = PlayerMovementEventHandler()
+        logger.debug(f'Registered event handlers: {[exit_event_handler, player_movement_event_handler]}')
 
         while True:
             self.root_console.clear()
@@ -43,6 +45,7 @@ class GameContext(AbstractGameContext):
 
             for event in tcod.event.wait():
                 self.tcod_context.convert_event(event)
+                logger.debug(f'Received event: {event}')
 
                 exit_event_handler.handle_event(event)
                 player_movement_event_handler.handle_event(event, self)

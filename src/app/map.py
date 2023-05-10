@@ -4,10 +4,10 @@ import random
 from abc import ABC, abstractmethod
 from typing import List
 
-from src.app.object import GameObject
-
 import tcod
+from loguru import logger
 
+from src.app.object import GameObject
 from src.app.tile import Floor, Wall, Tile
 
 
@@ -59,6 +59,7 @@ class Map(AbstractMap):
     def remove_object(self, obj: GameObject) -> None:
         if isinstance(obj, GameObject):
             self._objects.remove(obj)
+            logger.debug(f'Removed object: {obj}')
 
     def get_objects_at_coordinates(self, target_x: int, target_y: int) -> List[GameObject] | None:
         output = []
@@ -67,7 +68,10 @@ class Map(AbstractMap):
                 output.append(obj)
 
         if not output:
+            logger.debug(f'No objects found at coordinates: {target_x}, {target_y}')
             return None
+
+        logger.debug(f'Objects found at coordinates: {target_x}, {target_y}: {output}')
         return output
 
     def generate_map(self, map_width: int, map_height: int) -> None:
@@ -77,9 +81,11 @@ class Map(AbstractMap):
         for node in bsp.inverted_level_order():
             if node.children:
                 self._connect_rooms(node)
+                logger.debug(f'Connected rooms: {node.children}')
                 continue
 
             self._create_room(node)
+            logger.debug(f'Created room: {node}')
 
     def _connect_rooms(self, parent_node: tcod.bsp.BSP) -> None:
         while True:
