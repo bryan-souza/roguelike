@@ -20,8 +20,8 @@ def main():
         player
     ]
 
-    game_map = Map()
-    game_map.generate_map(console.width, console.height)
+    game_map = Map(console.width, console.height)
+    game_map.generate_map()
     logger.debug('Map generated successfully')
     game_map.place_objects(objects)
     logger.debug('Objects placed successfully')

@@ -37,6 +37,9 @@ class GameContext(AbstractGameContext):
         while True:
             self.root_console.clear()
 
+            for tile in self.game_map.tiles:
+                self.root_console.print(tile.x, tile.y, tile.char, tile.color, Palette.BACKGROUND)
+
             objects_ordered_by_render_order = sorted(self.game_map.objects, key=lambda o: o.render_order.value)
             for obj in objects_ordered_by_render_order:
                 self.root_console.print(obj.x, obj.y, obj.char, obj.color, Palette.BACKGROUND)

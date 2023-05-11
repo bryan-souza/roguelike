@@ -38,8 +38,6 @@ class PlayerMovementEventHandler(AbstractEventHandler):
             target_x = game_context.player.x + direction[0]
             target_y = game_context.player.y + direction[1]
 
-            objects_at_target_position = game_context.game_map.get_objects_at_coordinates(target_x, target_y)
-            if objects_at_target_position is not None:
-                for obj in objects_at_target_position:
-                    if isinstance(obj, Tile) and obj.walkable:
-                        game_context.player.move(*direction)
+            tile_at_target_position = game_context.game_map.get_tile_at_coordinates(target_x, target_y)
+            if tile_at_target_position is not None and tile_at_target_position.walkable:
+                game_context.player.move(*direction)
