@@ -6,8 +6,6 @@ from src.app.render import RenderOrder
 
 
 class Tile(GameObject):
-    transparent: bool
-    walkable: bool
     visible: bool
     explored: bool
 
@@ -19,19 +17,18 @@ class Wall(Tile):
             x: int,
             y: int,
             char: Optional[str] = None,
-            color: Optional[Tuple[int, int, int]] = None,
-            render_order: Optional[RenderOrder] = None
+            color: Optional[Tuple[int, int, int]] = None
     ):
         if char is None:
             char = '#'
         if color is None:
             color = Palette.FOREGROUND
-        if render_order is None:
-            render_order = RenderOrder.TILE
 
-        super().__init__(x, y, char, color, render_order)
-        self.transparent = False
-        self.walkable = False
+        render_order = RenderOrder.TILE
+        transparent = False
+        walkable = False
+
+        super().__init__(x, y, char, color, render_order, transparent, walkable)
         self.visible = False
         self.explored = False
 
@@ -47,18 +44,17 @@ class Floor(Tile):
             y: int,
             char: Optional[str] = None,
             color: Optional[Tuple[int, int, int]] = None,
-            render_order: Optional[RenderOrder] = None
     ):
         if char is None:
             char = '.'
         if color is None:
             color = Palette.FOREGROUND
-        if render_order is None:
-            render_order = RenderOrder.TILE
 
-        super().__init__(x, y, char, color, render_order)
-        self.transparent = True
-        self.walkable = True
+        render_order = RenderOrder.TILE
+        transparent = True
+        walkable = True
+
+        super().__init__(x, y, char, color, render_order, transparent, walkable)
         self.visible = False
         self.explored = False
 
