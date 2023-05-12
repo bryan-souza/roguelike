@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 import tcod
 from loguru import logger
 
-from src.app.actor import Actor
-from src.app.event import ExitEventHandler, PlayerMovementEventHandler
-from src.app.map import GameMap
+from src.app.base.actor import Actor
+from src.app.base.event import ExitEventHandler, PlayerMovementEventHandler
+from src.app.base.map import GameMap
 from src.app.util.palette import Palette, Color
 
 

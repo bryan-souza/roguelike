@@ -9,8 +9,8 @@ import numpy as np
 import tcod
 from loguru import logger
 
-from src.app.actor import Actor
-from src.app.object import GameObject
+from src.app.base.actor import Actor
+from src.app.base.object import GameObject
 from src.app.util.tile import Floor, Wall, Tile
 
 

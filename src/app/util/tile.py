@@ -1,6 +1,6 @@
 from typing import Tuple, Optional
 
-from src.app.object import GameObject
+from src.app.base.object import GameObject
 from src.app.util.palette import Palette
 from src.app.util.render import RenderOrder
 

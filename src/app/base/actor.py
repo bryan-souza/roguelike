@@ -1,4 +1,4 @@
-from src.app.object import MovableObject
+from src.app.base.object import MovableObject
 
 from typing import Tuple
 

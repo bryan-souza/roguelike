@@ -3,9 +3,9 @@ from pathlib import Path
 import tcod
 from loguru import logger
 
-from src.app.actor import Actor
-from src.app.context import GameContext
-from src.app.map import GameMapBuilder
+from src.app.base.actor import Actor
+from src.app.base.context import GameContext
+from src.app.base.map import GameMapBuilder
 from src.app.util.palette import Color
 
 
