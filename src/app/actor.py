@@ -3,7 +3,7 @@ from src.app.object import MovableObject
 from typing import Tuple
 
 
-class Character(MovableObject):
+class Actor(MovableObject):
     max_hp: int
     hp: int
 

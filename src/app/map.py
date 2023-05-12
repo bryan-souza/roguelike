@@ -8,15 +8,22 @@ from typing import List
 import tcod
 from loguru import logger
 
+from src.app.actor import Actor
 from src.app.object import GameObject
 from src.app.tile import Floor, Wall, Tile
 
 
-class AbstractMap(ABC):
+class AbstractGameMap(ABC):
     map_width: int
     map_height: int
     _tiles: List[List[Tile]]
     _objects: List[GameObject]
+    _actors: List[Actor]
+
+    @property
+    @abstractmethod
+    def tiles(self):
+        ...
 
     @property
     @abstractmethod
@@ -25,19 +32,7 @@ class AbstractMap(ABC):
 
     @property
     @abstractmethod
-    def tiles(self):
-        ...
-
-    @abstractmethod
-    def place_objects(self, objects: List[GameObject]) -> None:
-        ...
-
-    @abstractmethod
-    def get_objects_at_coordinates(self, target_x: int, target_y: int) -> List[GameObject] | None:
-        ...
-
-    @abstractmethod
-    def remove_object(self, obj: GameObject) -> None:
+    def actors(self):
         ...
 
     @abstractmethod
@@ -49,6 +44,22 @@ class AbstractMap(ABC):
         ...
 
     @abstractmethod
+    def place_objects(self, objects: List[GameObject]) -> None:
+        ...
+
+    @abstractmethod
+    def get_objects_at_coordinates(self, x: int, y: int) -> List[GameObject]:
+        ...
+
+    @abstractmethod
+    def remove_object(self, obj: GameObject) -> None:
+        ...
+
+    @abstractmethod
+    def place_actors(self, actors: List[Actor]) -> None:
+        ...
+
+    @abstractmethod
     def _create_room(self, room: tcod.bsp.BSP) -> None:
         ...
 
@@ -57,43 +68,26 @@ class AbstractMap(ABC):
         ...
 
 
-class Map(AbstractMap):
-
+class GameMap(AbstractGameMap):
     def __init__(self, map_width: int, map_height: int):
         self.map_width = map_width
         self.map_height = map_height
-        self._objects = []
         self._tiles = [[Tile(x, y, '.') for y in range(map_height)] for x in range(map_width)]
+        self._objects = []
+        self._actors = []
+
+    @property
+    def tiles(self):
+        logger.debug(self._tiles[:10])
+        return list(itertools.chain.from_iterable(self._tiles))
 
     @property
     def objects(self):
         return self._objects
 
     @property
-    def tiles(self):
-        return itertools.chain(*self._tiles)
-
-    def place_objects(self, objects: List[GameObject]) -> None:
-        self._objects.extend(objects)
-        logger.debug(f'Placed objects: {objects}')
-
-    def remove_object(self, obj: GameObject) -> None:
-        if isinstance(obj, GameObject):
-            self._objects.remove(obj)
-            logger.debug(f'Removed object: {obj}')
-
-    def get_objects_at_coordinates(self, target_x: int, target_y: int) -> List[GameObject] | None:
-        output = []
-        for obj in self._objects:
-            if obj.x == target_x and obj.y == target_y:
-                output.append(obj)
-
-        if not output:
-            logger.debug(f'No objects found at coordinates: {target_x}, {target_y}')
-            return None
-
-        logger.debug(f'Objects found at coordinates: {target_x}, {target_y}: {output}')
-        return output
+    def actors(self):
+        return self._actors
 
     def get_tile_at_coordinates(self, x: int, y: int) -> Tile:
         return self._tiles[x][y]
@@ -110,6 +104,28 @@ class Map(AbstractMap):
 
             self._create_room(node)
             logger.debug(f'Created room: {node}')
+
+    def place_objects(self, objects: List[GameObject]) -> None:
+        self._objects.extend(objects)
+        logger.debug(f'Placed objects: {objects}')
+
+    def get_objects_at_coordinates(self, x: int, y: int) -> List[GameObject]:
+        object_list = []
+
+        for obj in self._objects:
+            if obj.x == x and obj.y == y:
+                object_list.append(obj)
+
+        logger.debug(f'Found objects at coordinates {x}, {y}: {object_list}')
+        return object_list
+
+    def remove_object(self, obj: GameObject) -> None:
+        self._objects.remove(obj)
+        logger.debug(f'Removed object: {obj}')
+
+    def place_actors(self, actors: List[Actor]) -> None:
+        self._actors.extend(actors)
+        logger.debug(f'Placed actors: {actors}')
 
     def _connect_rooms(self, parent_node: tcod.bsp.BSP) -> None:
         while True:
@@ -148,3 +164,4 @@ class Map(AbstractMap):
             return False
 
         return True
+

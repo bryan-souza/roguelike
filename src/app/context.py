@@ -3,17 +3,17 @@ from abc import ABC, abstractmethod
 import tcod
 from loguru import logger
 
-from src.app.character import Character
+from src.app.actor import Actor
 from src.app.event import ExitEventHandler, PlayerMovementEventHandler
-from src.app.map import AbstractMap
+from src.app.map import GameMap
 from src.app.palette import Palette
 
 
 class AbstractGameContext(ABC):
-    game_map: AbstractMap
+    game_map: GameMap
     root_console: tcod.Console
     tcod_context: tcod.context.Context
-    player: Character
+    player: Actor
 
     @abstractmethod
     def start_game(self):
@@ -22,8 +22,13 @@ class AbstractGameContext(ABC):
 
 class GameContext(AbstractGameContext):
 
-    def __init__(self, game_map: AbstractMap, root_console: tcod.Console, tcod_context: tcod.context.Context,
-                 player: Character):
+    def __init__(
+        self,
+        game_map: GameMap,
+        root_console: tcod.Console,
+        tcod_context: tcod.context.Context,
+        player: Actor
+    ):
         self.game_map = game_map
         self.root_console = root_console
         self.tcod_context = tcod_context
@@ -38,9 +43,11 @@ class GameContext(AbstractGameContext):
             self.root_console.clear()
 
             for tile in self.game_map.tiles:
+                logger.debug(tile)
                 self.root_console.print(tile.x, tile.y, tile.char, tile.color, Palette.BACKGROUND)
 
-            objects_ordered_by_render_order = sorted(self.game_map.objects, key=lambda o: o.render_order.value)
+            objects_to_be_rendered = [*self.game_map.actors, *self.game_map.objects]
+            objects_ordered_by_render_order = sorted(objects_to_be_rendered, key=lambda o: o.render_order.value)
             for obj in objects_ordered_by_render_order:
                 self.root_console.print(obj.x, obj.y, obj.char, obj.color, Palette.BACKGROUND)
 

@@ -3,9 +3,9 @@ from pathlib import Path
 import tcod
 from loguru import logger
 
-from src.app.character import Character
+from src.app.actor import Actor
 from src.app.context import GameContext
-from src.app.map import Map
+from src.app.map import GameMap
 from src.app.palette import Color
 
 
@@ -15,16 +15,20 @@ def main():
     logger.debug(f'Loaded tileset from file {tileset_path}')
 
     console = tcod.Console(80, 50, order='F')
-    player = Character(1, 1, '@', Color.WHITE, 100, 100)
-    objects = [
+    player = Actor(1, 1, '@', Color.WHITE, 100, 100)
+    actors = [
         player
     ]
 
-    game_map = Map(console.width, console.height)
+    game_map = GameMap(console.width, console.height)
     game_map.generate_map()
     logger.debug('Map generated successfully')
-    game_map.place_objects(objects)
+
+    game_map.place_objects([])
     logger.debug('Objects placed successfully')
+
+    game_map.place_actors(actors)
+    logger.debug('Actors placed successfully')
 
     with tcod.context.new(columns=console.width, rows=console.height, tileset=tileset) as context:
         game_context = GameContext(game_map, console, context, player)
