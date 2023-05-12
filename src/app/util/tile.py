@@ -1,8 +1,8 @@
 from typing import Tuple, Optional
 
 from src.app.object import GameObject
-from src.app.palette import Palette
-from src.app.render import RenderOrder
+from src.app.util.palette import Palette
+from src.app.util.render import RenderOrder
 
 
 class Tile(GameObject):

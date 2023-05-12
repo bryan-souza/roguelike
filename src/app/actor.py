@@ -2,7 +2,7 @@ from src.app.object import MovableObject
 
 from typing import Tuple
 
-from src.app.render import RenderOrder
+from src.app.util.render import RenderOrder
 
 
 class Actor(MovableObject):

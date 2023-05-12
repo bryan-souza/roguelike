@@ -5,8 +5,8 @@ from loguru import logger
 
 from src.app.actor import Actor
 from src.app.context import GameContext
-from src.app.map import GameMap, GameMapBuilder
-from src.app.palette import Color
+from src.app.map import GameMapBuilder
+from src.app.util.palette import Color
 
 
 def main():

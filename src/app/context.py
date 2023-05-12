@@ -6,7 +6,7 @@ from loguru import logger
 from src.app.actor import Actor
 from src.app.event import ExitEventHandler, PlayerMovementEventHandler
 from src.app.map import GameMap
-from src.app.palette import Palette, Color
+from src.app.util.palette import Palette, Color
 
 
 class AbstractGameContext(ABC):

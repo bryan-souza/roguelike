@@ -1,7 +1,7 @@
 from typing import Tuple, Optional
 
-from src.app.palette import Color
-from src.app.render import RenderOrder
+from src.app.util.palette import Color
+from src.app.util.render import RenderOrder
 
 
 class GameObject:

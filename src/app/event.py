@@ -2,8 +2,7 @@ from abc import ABC, abstractmethod
 
 import tcod
 
-from src.app.direction import Direction
-from src.app.tile import Tile
+from src.app.util.direction import Direction
 
 
 class AbstractEventHandler(ABC):

@@ -11,7 +11,7 @@ from loguru import logger
 
 from src.app.actor import Actor
 from src.app.object import GameObject
-from src.app.tile import Floor, Wall, Tile
+from src.app.util.tile import Floor, Wall, Tile
 
 
 class AbstractGameMap(ABC):
