@@ -5,7 +5,7 @@ from loguru import logger
 
 from src.app.actor import Actor
 from src.app.context import GameContext
-from src.app.map import GameMap
+from src.app.map import GameMap, GameMapBuilder
 from src.app.palette import Color
 
 
@@ -20,8 +20,8 @@ def main():
         player
     ]
 
-    game_map = GameMap(console.width, console.height)
-    game_map.generate_map()
+    map_builder = GameMapBuilder(console.width, console.height)
+    game_map = map_builder.generate_map()
     logger.debug('Map generated successfully')
 
     game_map.place_objects([])

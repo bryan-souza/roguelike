@@ -14,8 +14,6 @@ from src.app.tile import Floor, Wall, Tile
 
 
 class AbstractGameMap(ABC):
-    map_width: int
-    map_height: int
     _tiles: List[List[Tile]]
     _objects: List[GameObject]
     _actors: List[Actor]
@@ -40,10 +38,6 @@ class AbstractGameMap(ABC):
         ...
 
     @abstractmethod
-    def generate_map(self) -> None:
-        ...
-
-    @abstractmethod
     def place_objects(self, objects: List[GameObject]) -> None:
         ...
 
@@ -59,6 +53,14 @@ class AbstractGameMap(ABC):
     def place_actors(self, actors: List[Actor]) -> None:
         ...
 
+
+class AbstractMapBuilder(ABC):
+    _tiles: List[List[Tile]]
+
+    @abstractmethod
+    def generate_map(self) -> AbstractGameMap:
+        ...
+
     @abstractmethod
     def _create_room(self, room: tcod.bsp.BSP) -> None:
         ...
@@ -67,12 +69,19 @@ class AbstractGameMap(ABC):
     def _connect_rooms(self, parent_node: tcod.bsp.BSP) -> None:
         ...
 
+    @staticmethod
+    @abstractmethod
+    def _get_door_coordinates(parent_node: tcod.bsp.BSP) -> tuple[int, int]:
+        ...
+
+    @abstractmethod
+    def _is_door_obstructed(self, door_x: int, door_y: int) -> bool:
+        ...
+
 
 class GameMap(AbstractGameMap):
-    def __init__(self, map_width: int, map_height: int):
-        self.map_width = map_width
-        self.map_height = map_height
-        self._tiles = [[Tile(x, y, '.') for y in range(map_height)] for x in range(map_width)]
+    def __init__(self, tiles: List[List[Tile]]):
+        self._tiles = tiles
         self._objects = []
         self._actors = []
 
@@ -91,19 +100,6 @@ class GameMap(AbstractGameMap):
 
     def get_tile_at_coordinates(self, x: int, y: int) -> Tile:
         return self._tiles[x][y]
-
-    def generate_map(self) -> None:
-        bsp = tcod.bsp.BSP(0, 0, self.map_width - 1, self.map_height - 1)
-        bsp.split_recursive(5, 8, 8, 1.0, 1.0)
-
-        for node in bsp.inverted_level_order():
-            if node.children:
-                self._connect_rooms(node)
-                logger.debug(f'Connected rooms: {node.children}')
-                continue
-
-            self._create_room(node)
-            logger.debug(f'Created room: {node}')
 
     def place_objects(self, objects: List[GameObject]) -> None:
         self._objects.extend(objects)
@@ -127,12 +123,28 @@ class GameMap(AbstractGameMap):
         self._actors.extend(actors)
         logger.debug(f'Placed actors: {actors}')
 
-    def _connect_rooms(self, parent_node: tcod.bsp.BSP) -> None:
-        while True:
-            door_x, door_y = self._get_door_coordinates(parent_node)
-            if not self._is_door_obstructed(door_x, door_y):
-                self._tiles[door_x][door_y] = Floor(door_x, door_y)
-                break
+
+class GameMapBuilder(AbstractMapBuilder):
+
+    def __init__(self, map_width: int, map_height: int):
+        self.map_width = map_width
+        self.map_height = map_height
+        self._tiles = [[Tile(x, y, '.') for y in range(map_height)] for x in range(map_width)]
+
+    def generate_map(self) -> AbstractGameMap:
+        bsp = tcod.bsp.BSP(0, 0, self.map_width - 1, self.map_height - 1)
+        bsp.split_recursive(5, 8, 8, 1.0, 1.0)
+
+        for node in bsp.inverted_level_order():
+            if node.children:
+                self._connect_rooms(node)
+                logger.debug(f'Connected rooms: {node.children}')
+                continue
+
+            self._create_room(node)
+            logger.debug(f'Created room: {node}')
+
+        return GameMap(self._tiles)
 
     def _create_room(self, room: tcod.bsp.BSP) -> None:
         for x in range(room.x, (room.x + room.width) + 1):
@@ -142,6 +154,13 @@ class GameMap(AbstractGameMap):
                     continue
 
                 self._tiles[x][y] = Floor(x, y)
+
+    def _connect_rooms(self, parent_node: tcod.bsp.BSP) -> None:
+        while True:
+            door_x, door_y = self._get_door_coordinates(parent_node)
+            if not self._is_door_obstructed(door_x, door_y):
+                self._tiles[door_x][door_y] = Floor(door_x, door_y)
+                break
 
     @staticmethod
     def _get_door_coordinates(parent_node: tcod.bsp.BSP) -> tuple[int, int]:
@@ -155,13 +174,12 @@ class GameMap(AbstractGameMap):
         return door_x, door_y
 
     def _is_door_obstructed(self, door_x: int, door_y: int) -> bool:
-        top_tile = self.get_tile_at_coordinates(door_x, door_y + 1)
-        right_tile = self.get_tile_at_coordinates(door_x + 1, door_y)
-        bottom_tile = self.get_tile_at_coordinates(door_x, door_y - 1)
-        left_tile = self.get_tile_at_coordinates(door_x - 1, door_y)
+        top_tile = self._tiles[door_x][door_y + 1]
+        bottom_tile = self._tiles[door_x][door_y - 1]
+        right_tile = self._tiles[door_x + 1][door_y]
+        left_tile = self._tiles[door_x - 1][door_y]
 
         if (top_tile.walkable and bottom_tile.walkable) or (right_tile.walkable and left_tile.walkable):
             return False
 
         return True
-
