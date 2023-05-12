@@ -6,8 +6,10 @@ from src.app.render import RenderOrder
 
 
 class Tile(GameObject):
-    visible: bool
+    transparent: bool
     walkable: bool
+    visible: bool
+    explored: bool
 
 
 class Wall(Tile):
@@ -28,11 +30,13 @@ class Wall(Tile):
             render_order = RenderOrder.TILE
 
         super().__init__(x, y, char, color, render_order)
-        self.visible = True
+        self.transparent = False
         self.walkable = False
+        self.visible = False
+        self.explored = False
 
     def __str__(self):
-        return f'<Wall(x={self.x}, y={self.y},  char={self.char}, color={self.color}, render_order={self.render_order})>'
+        return f'<Wall(x={self.x}, y={self.y}, transparent={self.transparent}, walkable={self.walkable}, visible={self.visible}, explored={self.explored})>'
 
 
 class Floor(Tile):
@@ -53,8 +57,10 @@ class Floor(Tile):
             render_order = RenderOrder.TILE
 
         super().__init__(x, y, char, color, render_order)
-        self.visible = True
+        self.transparent = True
         self.walkable = True
+        self.visible = False
+        self.explored = False
 
     def __str__(self):
-        return f'<Floor(x={self.x}, y={self.y},  char={self.char}, color={self.color}, render_order={self.render_order})>'
+        return f'<Floor(x={self.x}, y={self.y}, transparent={self.transparent}, walkable={self.walkable}, visible={self.visible}, explored={self.explored})>'

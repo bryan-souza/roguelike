@@ -6,7 +6,7 @@ from loguru import logger
 from src.app.actor import Actor
 from src.app.event import ExitEventHandler, PlayerMovementEventHandler
 from src.app.map import GameMap
-from src.app.palette import Palette
+from src.app.palette import Palette, Color
 
 
 class AbstractGameContext(ABC):
@@ -17,6 +17,10 @@ class AbstractGameContext(ABC):
 
     @abstractmethod
     def start_game(self):
+        ...
+
+    @abstractmethod
+    def _render_all(self):
         ...
 
 
@@ -40,18 +44,7 @@ class GameContext(AbstractGameContext):
         logger.debug(f'Registered event handlers: {[exit_event_handler, player_movement_event_handler]}')
 
         while True:
-            self.root_console.clear()
-
-            for tile in self.game_map.tiles:
-                logger.debug(tile)
-                self.root_console.print(tile.x, tile.y, tile.char, tile.color, Palette.BACKGROUND)
-
-            objects_to_be_rendered = [*self.game_map.actors, *self.game_map.objects]
-            objects_ordered_by_render_order = sorted(objects_to_be_rendered, key=lambda o: o.render_order.value)
-            for obj in objects_ordered_by_render_order:
-                self.root_console.print(obj.x, obj.y, obj.char, obj.color, Palette.BACKGROUND)
-
-            self.tcod_context.present(self.root_console)
+            self._render_all()
 
             for event in tcod.event.wait():
                 self.tcod_context.convert_event(event)
@@ -59,3 +52,26 @@ class GameContext(AbstractGameContext):
 
                 exit_event_handler.handle_event(event)
                 player_movement_event_handler.handle_event(event, self)
+
+    def _render_all(self):
+        self.root_console.clear()
+        self.game_map.compute_fov(self.player)
+
+        for tile in self.game_map.tiles:
+            if tile.visible:
+                self.root_console.print(tile.x, tile.y, tile.char, tile.color, Palette.BACKGROUND)
+
+                actor_in_tile = self.game_map.get_actor_at_coordinates(tile.x, tile.y)
+                objects_in_tile = self.game_map.get_objects_at_coordinates(tile.x, tile.y)
+
+                objects_to_be_rendered = objects_in_tile
+                if actor_in_tile:
+                    objects_to_be_rendered = [actor_in_tile, *objects_in_tile]
+
+                objects_ordered_by_render_order = sorted(objects_to_be_rendered, key=lambda o: o.render_order.value)
+                for obj in objects_ordered_by_render_order:
+                    self.root_console.print(obj.x, obj.y, obj.char, obj.color, Palette.BACKGROUND)
+            elif tile.explored:
+                self.root_console.print(tile.x, tile.y, tile.char, Color.DARK_GRAY, Palette.BACKGROUND)
+
+        self.tcod_context.present(self.root_console)

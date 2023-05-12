@@ -5,6 +5,7 @@ import random
 from abc import ABC, abstractmethod
 from typing import List
 
+import numpy as np
 import tcod
 from loguru import logger
 
@@ -51,6 +52,18 @@ class AbstractGameMap(ABC):
 
     @abstractmethod
     def place_actors(self, actors: List[Actor]) -> None:
+        ...
+
+    @abstractmethod
+    def get_actor_at_coordinates(self, x: int, y: int) -> Actor | None:
+        ...
+
+    @abstractmethod
+    def remove_actor(self, actor: Actor) -> None:
+        ...
+
+    @abstractmethod
+    def compute_fov(self, player: Actor) -> None:
         ...
 
 
@@ -122,6 +135,27 @@ class GameMap(AbstractGameMap):
     def place_actors(self, actors: List[Actor]) -> None:
         self._actors.extend(actors)
         logger.debug(f'Placed actors: {actors}')
+
+    def get_actor_at_coordinates(self, x: int, y: int) -> Actor | None:
+        for actor in self._actors:
+            if actor.x == x and actor.y == y:
+                return actor
+        return None
+
+    def remove_actor(self, actor: Actor) -> None:
+        self._actors.remove(actor)
+
+    def compute_fov(self, player: Actor) -> None:
+        transparent_tiles = np.array([[tile.transparent for tile in row] for row in self._tiles])
+        visible = tcod.map.compute_fov(transparent_tiles, (player.x, player.y), radius=5)
+
+        map_width, map_height = transparent_tiles.shape
+        for x, y in itertools.product(range(map_width), range(map_height)):
+            self._tiles[x][y].visible = False
+
+            if visible[x, y]:
+                self._tiles[x][y].visible = True
+                self._tiles[x][y].explored = True
 
 
 class GameMapBuilder(AbstractMapBuilder):
