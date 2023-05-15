@@ -9,7 +9,7 @@ import numpy as np
 import tcod
 from loguru import logger
 
-from src.app.base.actor import Actor
+from src.app.base.actor import AbstractActor
 from src.app.base.object import GameObject
 from src.app.util.tile import Floor, Wall, Tile
 
@@ -17,7 +17,7 @@ from src.app.util.tile import Floor, Wall, Tile
 class AbstractGameMap(ABC):
     _tiles: List[List[Tile]]
     _objects: List[GameObject]
-    _actors: List[Actor]
+    _actors: List[AbstractActor]
 
     @property
     @abstractmethod
@@ -51,19 +51,19 @@ class AbstractGameMap(ABC):
         ...
 
     @abstractmethod
-    def place_actors(self, actors: List[Actor]) -> None:
+    def place_actors(self, actors: List[AbstractActor]) -> None:
         ...
 
     @abstractmethod
-    def get_actor_at_coordinates(self, x: int, y: int) -> Actor | None:
+    def get_actor_at_coordinates(self, x: int, y: int) -> AbstractActor | None:
         ...
 
     @abstractmethod
-    def remove_actor(self, actor: Actor) -> None:
+    def remove_actor(self, actor: AbstractActor) -> None:
         ...
 
     @abstractmethod
-    def compute_fov(self, player: Actor) -> None:
+    def compute_fov(self, player: AbstractActor) -> None:
         ...
 
 
@@ -132,20 +132,20 @@ class GameMap(AbstractGameMap):
         self._objects.remove(obj)
         logger.debug(f'Removed object: {obj}')
 
-    def place_actors(self, actors: List[Actor]) -> None:
+    def place_actors(self, actors: List[AbstractActor]) -> None:
         self._actors.extend(actors)
         logger.debug(f'Placed actors: {actors}')
 
-    def get_actor_at_coordinates(self, x: int, y: int) -> Actor | None:
+    def get_actor_at_coordinates(self, x: int, y: int) -> AbstractActor | None:
         for actor in self._actors:
             if actor.x == x and actor.y == y:
                 return actor
         return None
 
-    def remove_actor(self, actor: Actor) -> None:
+    def remove_actor(self, actor: AbstractActor) -> None:
         self._actors.remove(actor)
 
-    def compute_fov(self, player: Actor) -> None:
+    def compute_fov(self, player: AbstractActor) -> None:
         transparent_tiles = np.array([[tile.transparent for tile in row] for row in self._tiles])
         visible = tcod.map.compute_fov(transparent_tiles, (player.x, player.y), radius=5)
 

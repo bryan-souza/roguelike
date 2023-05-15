@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import tcod
 from loguru import logger
 
-from src.app.base.actor import Actor
+from src.app.base.actor import AbstractActor
 from src.app.base.event import ExitEventHandler, PlayerMovementEventHandler
 from src.app.base.map import GameMap
 from src.app.util.palette import Palette, Color
@@ -13,7 +13,7 @@ class AbstractGameContext(ABC):
     game_map: GameMap
     root_console: tcod.Console
     tcod_context: tcod.context.Context
-    player: Actor
+    player: AbstractActor
 
     @abstractmethod
     def start_game(self):
@@ -31,7 +31,7 @@ class GameContext(AbstractGameContext):
         game_map: GameMap,
         root_console: tcod.Console,
         tcod_context: tcod.context.Context,
-        player: Actor
+        player: AbstractActor
     ):
         self.game_map = game_map
         self.root_console = root_console
