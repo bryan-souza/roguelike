@@ -5,12 +5,12 @@ from loguru import logger
 
 from src.app.base.actor import AbstractActor
 from src.app.base.event import ExitEventHandler, PlayerMovementEventHandler
-from src.app.base.map import GameMap
+from src.app.base.map import AbstractGameMap
 from src.app.util.palette import Palette, Color
 
 
 class AbstractGameContext(ABC):
-    game_map: GameMap
+    game_map: AbstractGameMap
     root_console: tcod.Console
     tcod_context: tcod.context.Context
     player: AbstractActor
@@ -28,7 +28,7 @@ class GameContext(AbstractGameContext):
 
     def __init__(
         self,
-        game_map: GameMap,
+        game_map: AbstractGameMap,
         root_console: tcod.Console,
         tcod_context: tcod.context.Context,
         player: AbstractActor
