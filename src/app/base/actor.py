@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
-
-from src.app.base.object import GameObject
-
 from typing import Tuple
 
+from src.app.base.object import GameObject
 from src.app.util.render import RenderOrder
 
 

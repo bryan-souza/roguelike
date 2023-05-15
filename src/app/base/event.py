@@ -1,3 +1,12 @@
+# Cleaner way to solve cyclic imports (applies only when cyclic imports are caused by typing)
+# Source:
+# https://stackoverflow.com/questions/744373/what-happens-when-using-mutual-or-circular-cyclic-imports/67673741#67673741
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.app.base.context import AbstractGameContext
+
+
 from abc import ABC, abstractmethod
 
 import tcod
@@ -8,7 +17,7 @@ from src.app.util.direction import Direction
 class AbstractEventHandler(ABC):
 
     @abstractmethod
-    def handle_event(self, *args, **kwargs):
+    def handle_event(self, *args, **kwargs) -> None:
         ...
 
 
@@ -21,7 +30,7 @@ class ExitEventHandler(AbstractEventHandler):
 
 class PlayerMovementEventHandler(AbstractEventHandler):
 
-    def handle_event(self, event: tcod.event.Event, game_context):
+    def handle_event(self, event: tcod.event.Event, game_context: AbstractGameContext):
         if isinstance(event, tcod.event.KeyDown):
             if event.sym == tcod.event.KeySym.LEFT:
                 direction = Direction.LEFT

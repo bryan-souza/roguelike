@@ -1,11 +1,19 @@
+# Cleaner way to solve cyclic imports (applies only when cyclic imports are caused by typing)
+# Source:
+# https://stackoverflow.com/questions/744373/what-happens-when-using-mutual-or-circular-cyclic-imports/67673741#67673741
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.app.base.actor import AbstractActor
+    from src.app.base.map import AbstractGameMap
+
+
 from abc import ABC, abstractmethod
 
 import tcod
 from loguru import logger
 
-from src.app.base.actor import AbstractActor
 from src.app.base.event import ExitEventHandler, PlayerMovementEventHandler
-from src.app.base.map import AbstractGameMap
 from src.app.util.palette import Palette, Color
 
 

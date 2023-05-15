@@ -1,4 +1,12 @@
+# Cleaner way to solve cyclic imports (applies only when cyclic imports are caused by typing)
+# Source:
+# https://stackoverflow.com/questions/744373/what-happens-when-using-mutual-or-circular-cyclic-imports/67673741#67673741
 from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.app.base.actor import AbstractActor
+    from src.app.base.object import GameObject
+
 
 import itertools
 import random
@@ -9,8 +17,6 @@ import numpy as np
 import tcod
 from loguru import logger
 
-from src.app.base.actor import AbstractActor
-from src.app.base.object import GameObject
 from src.app.util.tile import Floor, Wall, Tile
 
 
